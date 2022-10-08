@@ -56,6 +56,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
  * A {@code Filter} that processes an authentication request for an OAuth 2.0 Client.
+ * 实现客户端认证的拦截器
  *
  * @author Joe Grandja
  * @author Patryk Kostrzewa
@@ -93,7 +94,10 @@ public final class OAuth2ClientAuthenticationFilter extends OncePerRequestFilter
 		Assert.notNull(requestMatcher, "requestMatcher cannot be null");
 		this.authenticationManager = authenticationManager;
 		this.requestMatcher = requestMatcher;
+//		不同的解析方式实际上就代表不同的认证方式（传参不同）。
 		this.authenticationConverter = new DelegatingAuthenticationConverter(
+//				authenticationConverter 的类型实际上是 DelegatingAuthenticationConverter，
+//				它持有一个 AuthenticationConverter 列表（不同的认证请求，其参数不同，所以会有不同的AuthenticationConverter实现类
 				Arrays.asList(
 						new JwtClientAssertionAuthenticationConverter(),
 						new ClientSecretBasicAuthenticationConverter(),
@@ -111,12 +115,14 @@ public final class OAuth2ClientAuthenticationFilter extends OncePerRequestFilter
 		}
 
 		try {
+//			authenticationConverter 从 request 中解析出客户端认证信息，构建成 Authentication
 			Authentication authenticationRequest = this.authenticationConverter.convert(request);
 			if (authenticationRequest instanceof AbstractAuthenticationToken) {
 				((AbstractAuthenticationToken) authenticationRequest).setDetails(
 						this.authenticationDetailsSource.buildDetails(request));
 			}
 			if (authenticationRequest != null) {
+//				再通过 authenticationManager 对 Authentication 进行认证
 				Authentication authenticationResult = this.authenticationManager.authenticate(authenticationRequest);
 				this.authenticationSuccessHandler.onAuthenticationSuccess(request, response, authenticationResult);
 			}

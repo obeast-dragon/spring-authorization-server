@@ -146,7 +146,10 @@ public class JwtUserInfoMapperSecurityConfig {
 				.scope(OidcScopes.OPENID)
 				.scope("message.read")
 				.scope("message.write")
-				.clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
+				.clientSettings(ClientSettings.builder()
+						.requireAuthorizationConsent(true)
+
+						.build())
 				.build();
 		// @formatter:on
 

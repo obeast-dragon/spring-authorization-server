@@ -95,16 +95,22 @@ public final class TokenSettings extends AbstractSettings {
 
 	/**
 	 * Constructs a new {@link Builder} with the default settings.
-	 *
+	 * token默认配置 令牌有效期默认是5分钟。令牌格式默认是自包含格式
 	 * @return the {@link Builder}
 	 */
 	public static Builder builder() {
 		return new Builder()
+//				授权码生效时间
 				.authorizationCodeTimeToLive(Duration.ofMinutes(5))
+//				accessToken生存时间
 				.accessTokenTimeToLive(Duration.ofMinutes(5))
+//				accessToken格式化
 				.accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)
+//				重用RefreshTokens
 				.reuseRefreshTokens(true)
+//				RefreshTokens生存时间
 				.refreshTokenTimeToLive(Duration.ofMinutes(60))
+//				token签名算法
 				.idTokenSignatureAlgorithm(SignatureAlgorithm.RS256);
 	}
 

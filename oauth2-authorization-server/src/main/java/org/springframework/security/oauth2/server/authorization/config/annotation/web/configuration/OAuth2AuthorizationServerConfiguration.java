@@ -48,6 +48,18 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 @Configuration(proxyBeanMethods = false)
 public class OAuth2AuthorizationServerConfiguration {
 
+
+	/*
+	有了这个bean，就会支持如下协议端点：
+	OAuth2 Authorization endpoint
+	OAuth2 Token endpoint
+	OAuth2 Token Introspection endpoint
+	OAuth2 Token Revocation endpoint
+	OAuth2 Authorization Server Metadata endpoint
+	JWK Set endpoint
+	OpenID Connect 1.0 Provider Configuration endpoint
+	OpenID Connect 1.0 UserInfo endpoint
+	*/
 	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {

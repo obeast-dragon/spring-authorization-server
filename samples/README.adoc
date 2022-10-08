@@ -121,7 +121,7 @@ spring:
 ====
 <1> `spring.security.oauth2.client.registration` is the base property prefix for OAuth Client properties.
 <2> Following the base property prefix is the ID for the `ClientRegistration`, such as github-idp.
-====
+
 
 . Replace the values in the `client-id` and `client-secret` property with the OAuth 2.0 credentials you created earlier.
 Alternatively, you can set the following environment variables in the Spring Boot application:

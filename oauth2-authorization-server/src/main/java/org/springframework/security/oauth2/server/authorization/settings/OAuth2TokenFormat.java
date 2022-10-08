@@ -32,12 +32,14 @@ public final class OAuth2TokenFormat implements Serializable {
 	/**
 	 * Self-contained tokens use a protected, time-limited data structure that contains token metadata
 	 * and claims of the user and/or client. JSON Web Token (JWT) is a widely used format.
+	 * 自包含令牌使用受保护的、有时间限制的数据结构，其中包含令牌元数据和用户和/或客户端的声明。 JSON Web Token (JWT) 是一种广泛使用的格式。
 	 */
 	public static final OAuth2TokenFormat SELF_CONTAINED = new OAuth2TokenFormat("self-contained");
 
 	/**
 	 * Reference (opaque) tokens are unique identifiers that serve as a reference
 	 * to the token metadata and claims of the user and/or client, stored at the provider.
+	 * 引用令牌是唯一标识符，用作对令牌元数据和用户和/或客户端声明的引用，存储在提供者处。
 	 */
 	public static final OAuth2TokenFormat REFERENCE = new OAuth2TokenFormat("reference");
 
