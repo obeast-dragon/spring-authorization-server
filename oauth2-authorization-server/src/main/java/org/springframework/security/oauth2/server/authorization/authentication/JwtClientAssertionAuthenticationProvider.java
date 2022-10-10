@@ -70,6 +70,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  * @see OAuth2ClientAuthenticationToken
  * @see RegisteredClientRepository
  * @see OAuth2AuthorizationService
+ * 客户端认证方式 之 client_secret_jwt
  */
 public final class JwtClientAssertionAuthenticationProvider implements AuthenticationProvider {
 	private static final String ERROR_URI = "https://datatracker.ietf.org/doc/html/rfc6749#section-3.2.1";
@@ -103,6 +104,7 @@ public final class JwtClientAssertionAuthenticationProvider implements Authentic
 			return null;
 		}
 
+//		使用请求携带的 clientId 查询客户端信息，若不存在则直接抛出异常
 		String clientId = clientAuthentication.getPrincipal().toString();
 		RegisteredClient registeredClient = this.registeredClientRepository.findByClientId(clientId);
 		if (registeredClient == null) {
@@ -118,9 +120,11 @@ public final class JwtClientAssertionAuthenticationProvider implements Authentic
 			throwInvalidClient("credentials");
 		}
 
+//		创建解析 JWT 的核心类 JwtDecoder
 		Jwt jwtAssertion = null;
 		JwtDecoder jwtDecoder = this.jwtClientAssertionDecoderFactory.createDecoder(registeredClient);
 		try {
+//			解析 JWT，并验签
 			jwtAssertion = jwtDecoder.decode(clientAuthentication.getCredentials().toString());
 		} catch (JwtException ex) {
 			throwInvalidClient(OAuth2ParameterNames.CLIENT_ASSERTION, ex);
@@ -175,11 +179,13 @@ public final class JwtClientAssertionAuthenticationProvider implements Authentic
 			Assert.notNull(registeredClient, "registeredClient cannot be null");
 			return this.jwtDecoders.computeIfAbsent(registeredClient.getId(), (key) -> {
 				NimbusJwtDecoder jwtDecoder = buildDecoder(registeredClient);
+//				设置验证器
 				jwtDecoder.setJwtValidator(createJwtValidator(registeredClient));
 				return jwtDecoder;
 			});
 		}
 
+//		JwtDecoder 的创建过程就会用到客户端的配置（签名算法、密钥）
 		private static NimbusJwtDecoder buildDecoder(RegisteredClient registeredClient) {
 			JwsAlgorithm jwsAlgorithm = registeredClient.getClientSettings().getTokenEndpointAuthenticationSigningAlgorithm();
 			if (jwsAlgorithm instanceof SignatureAlgorithm) {

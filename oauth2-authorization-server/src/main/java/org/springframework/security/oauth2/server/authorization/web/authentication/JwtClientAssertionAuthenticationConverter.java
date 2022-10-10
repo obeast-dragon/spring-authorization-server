@@ -40,6 +40,8 @@ import org.springframework.util.StringUtils;
  * @see AuthenticationConverter
  * @see OAuth2ClientAuthenticationToken
  * @see OAuth2ClientAuthenticationFilter
+ *
+ * 客户端认证方式 之 client_secret_jwt
  */
 public final class JwtClientAssertionAuthenticationConverter implements AuthenticationConverter {
 	private static final ClientAuthenticationMethod JWT_CLIENT_ASSERTION_AUTHENTICATION_METHOD =
@@ -48,6 +50,8 @@ public final class JwtClientAssertionAuthenticationConverter implements Authenti
 	@Nullable
 	@Override
 	public Authentication convert(HttpServletRequest request) {
+
+//		从请求中解析出 client_id、client_assertion_type、client_assertion 参数。
 		if (request.getParameter(OAuth2ParameterNames.CLIENT_ASSERTION_TYPE) == null ||
 				request.getParameter(OAuth2ParameterNames.CLIENT_ASSERTION) == null) {
 			return null;
