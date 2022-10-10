@@ -44,6 +44,8 @@ import org.springframework.util.Assert;
  * @see RegisteredClientRepository
  * @see OAuth2AuthorizationService
  * @see PasswordEncoder
+ *
+ * client_secret_basic 认证处理
  */
 public final class ClientSecretAuthenticationProvider implements AuthenticationProvider {
 	private static final String ERROR_URI = "https://datatracker.ietf.org/doc/html/rfc6749#section-3.2.1";
@@ -90,6 +92,7 @@ public final class ClientSecretAuthenticationProvider implements AuthenticationP
 		}
 
 		String clientId = clientAuthentication.getPrincipal().toString();
+//		使用请求携带的 clientId 查询客户端信息，若不存在则直接抛出异常
 		RegisteredClient registeredClient = this.registeredClientRepository.findByClientId(clientId);
 		if (registeredClient == null) {
 			throwInvalidClient(OAuth2ParameterNames.CLIENT_ID);
@@ -104,6 +107,8 @@ public final class ClientSecretAuthenticationProvider implements AuthenticationP
 			throwInvalidClient("credentials");
 		}
 
+//		使用PasswordEncoder 对请求携带的 clientSecret 和 原始的 clientSecret 进行匹配验证。
+//		若验证失败则直接抛出异常
 		String clientSecret = clientAuthentication.getCredentials().toString();
 		if (!this.passwordEncoder.matches(clientSecret, registeredClient.getClientSecret())) {
 			throwInvalidClient(OAuth2ParameterNames.CLIENT_SECRET);
@@ -117,6 +122,7 @@ public final class ClientSecretAuthenticationProvider implements AuthenticationP
 		// Validate the "code_verifier" parameter for the confidential client, if available
 		this.codeVerifierAuthenticator.authenticateIfAvailable(clientAuthentication, registeredClient);
 
+//		认证通过了
 		return new OAuth2ClientAuthenticationToken(registeredClient,
 				clientAuthentication.getClientAuthenticationMethod(), clientAuthentication.getCredentials());
 	}

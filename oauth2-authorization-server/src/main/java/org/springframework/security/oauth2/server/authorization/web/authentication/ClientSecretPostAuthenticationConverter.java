@@ -41,6 +41,8 @@ import org.springframework.util.StringUtils;
  * @see OAuth2ClientAuthenticationToken
  * @see OAuth2ClientAuthenticationFilter
  * @see <a target="_blank" href="https://tools.ietf.org/html/rfc6749#section-2.3.1">Section 2.3.1 Client Password</a>
+ *
+ * client_secret_post 的请求转换
  */
 public final class ClientSecretPostAuthenticationConverter implements AuthenticationConverter {
 
@@ -49,6 +51,7 @@ public final class ClientSecretPostAuthenticationConverter implements Authentica
 	public Authentication convert(HttpServletRequest request) {
 		MultiValueMap<String, String> parameters = OAuth2EndpointUtils.getParameters(request);
 
+//		其实就是从请求表单中获取 clientId 和 clientSecret。
 		// client_id (REQUIRED)
 		String clientId = parameters.getFirst(OAuth2ParameterNames.CLIENT_ID);
 		if (!StringUtils.hasText(clientId)) {

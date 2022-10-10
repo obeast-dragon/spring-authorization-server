@@ -43,6 +43,10 @@ import org.springframework.util.StringUtils;
  * @see AuthenticationConverter
  * @see OAuth2ClientAuthenticationToken
  * @see OAuth2ClientAuthenticationFilter
+ *
+ * client_secret_basic 的请求转换
+ * clientId 和 clientSecret 通过 ‘:’ 号拼接，并使用 Base64 进行编码，再携带在请求头中发送，
+ * 那么 ClientSecretBasicAuthenticationConverter 自然也是从请求头中获取并执行相反的逻辑（解码、拆分）
  */
 public final class ClientSecretBasicAuthenticationConverter implements AuthenticationConverter {
 
@@ -88,6 +92,8 @@ public final class ClientSecretBasicAuthenticationConverter implements Authentic
 			throw new OAuth2AuthenticationException(new OAuth2Error(OAuth2ErrorCodes.INVALID_REQUEST), ex);
 		}
 
+//		生成一个 OAuth2ClientAuthenticationToken 对象，
+//		待交由 ClientSecretAuthenticationProvider 处理认证。
 		return new OAuth2ClientAuthenticationToken(clientID, ClientAuthenticationMethod.CLIENT_SECRET_BASIC, clientSecret,
 				OAuth2EndpointUtils.getParametersIfMatchesAuthorizationCodeGrantRequest(request));
 	}

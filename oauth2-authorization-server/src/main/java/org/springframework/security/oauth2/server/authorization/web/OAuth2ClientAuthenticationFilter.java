@@ -71,8 +71,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * @see PublicClientAuthenticationProvider
  * @see <a target="_blank" href="https://datatracker.ietf.org/doc/html/rfc6749#section-2.3">Section 2.3 Client Authentication</a>
  * @see <a target="_blank" href="https://datatracker.ietf.org/doc/html/rfc6749#section-3.2.1">Section 3.2.1 Token Endpoint Client Authentication</a>
+ * 每种客户端认证方式实际就是一个 AuthenticationConverter 搭配一个 AuthenticationProvider 组合而成，
+ * 一个负责解析请求参数，一个负责处理请求参数，执行认证逻辑
  */
 public final class OAuth2ClientAuthenticationFilter extends OncePerRequestFilter {
+	/*
+	authenticationManager 的类型实际上是 ProviderManager，它持有一个 AuthenticationProvider 列表（不同的认证方式，其认证逻辑不同，所以会有不同的AuthenticationProvider实现类）。
+	ProviderManager 在执行认证时会遍历 AuthenticationProvider 列表，当某个 AuthenticationProvider 认证成功时，立马返回
+	 */
 	private final AuthenticationManager authenticationManager;
 	private final RequestMatcher requestMatcher;
 	private final HttpMessageConverter<OAuth2Error> errorHttpResponseConverter = new OAuth2ErrorHttpMessageConverter();
@@ -102,7 +108,11 @@ public final class OAuth2ClientAuthenticationFilter extends OncePerRequestFilter
 						new JwtClientAssertionAuthenticationConverter(),
 						new ClientSecretBasicAuthenticationConverter(),
 						new ClientSecretPostAuthenticationConverter(),
-						new PublicClientAuthenticationConverter()));
+						new PublicClientAuthenticationConverter())
+//				DelegatingAuthenticationConverter 在解析请求时会遍历 AuthenticationConverter 列表，
+//				当某个 AuthenticationConverter 解析成功时，立即返回，这也能确定此请求是什么认证方式，
+//				后续再执行对应的认证逻辑。
+		);
 	}
 
 	@Override
